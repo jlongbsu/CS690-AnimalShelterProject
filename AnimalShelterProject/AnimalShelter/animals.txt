@@ -1,2 +1,9 @@
-A,Dog,1,not ready,04/06/2025
-B,cat,2,not ready,04/06/2025
+A,Dog,1,Not Ready,04/06/2025
+B,Cat,2,Not Ready,04/06/2025
+C,Dog,1,Not Ready,04/07/2025
+D,Cat,2,Ready,04/07/2025
+E,Cat,2,Not Ready,04/07/2025
+F,Dog,3,Not Ready,04/07/2025
+G,Dog,4,Not Ready,04/07/2025
+H,Dog,2,Not Ready,04/07/2025
+I,Dog,3,Not Ready,04/07/2025
