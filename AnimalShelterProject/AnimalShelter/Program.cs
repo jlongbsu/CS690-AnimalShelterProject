@@ -33,7 +33,7 @@ class Program
             }
         }
         Dictionary<string, List<Vaccine>> animalsVaccines = new Dictionary<string, List<Vaccine>>();
-        string vaccinesFilePath = "vaccines.txt"
+        string vaccinesFilePath = "vaccines.txt";
         if(File.Exists(vaccinesFilePath)){
             foreach(var line in File.ReadLines(vaccinesFilePath)){
                 string[] vaccineInfo = line.Split(",");
