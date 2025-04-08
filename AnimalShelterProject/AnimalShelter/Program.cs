@@ -39,6 +39,8 @@ class Program
                 string[] vaccineInfo = line.Split(",");
                 if(animalsVaccines.ContainsKey(vaccineInfo[0])){
                     animalsVaccines[vaccineInfo[0]].Add(new Vaccine(vaccineInfo[1], DateTime.Parse(vaccineInfo[2])));
+                }else{
+                    animalsVaccines[vaccineInfo[0]] = new List<Vaccine>{new Vaccine(vaccineInfo[1], DateTime.Parse(vaccineInfo[2]))};
                 }
             }
         }
@@ -47,7 +49,21 @@ class Program
         if(File.Exists(animalsFilePath)){
             foreach(var line in File.ReadLines(animalsFilePath)){
                 string[] animalInfo = line.Split(",");
-                animals.Add(new Animal(id, animalInfo[0], animalInfo[1], int.Parse(animalInfo[2]), "", animalInfo[3], DateTime.Parse(animalInfo[4]), null, upcomingAppointments.ContainsKey(id.ToString()) ? upcomingAppointments[id.ToString()] : null));
+                if(!upcomingAppointments.ContainsKey(id.ToString())){
+                    upcomingAppointments[id.ToString()] = new List<Appointment>();
+                }
+                MedicalHistory medicalHistory = new MedicalHistory(new List<Appointment>(), new List<Vaccine>());
+                if(previousAppointments.ContainsKey(id.ToString())){
+                    foreach(Appointment appointment in previousAppointments[id.ToString()]){
+                        medicalHistory.PreviousAppointments.Add(appointment);
+                    }
+                }
+                if(animalsVaccines.ContainsKey(id.ToString())){
+                    foreach(Vaccine vaccine in animalsVaccines[id.ToString()]){
+                        medicalHistory.Vaccines.Add(vaccine);
+                    }
+                }
+                animals.Add(new Animal(id, animalInfo[0], animalInfo[1], int.Parse(animalInfo[2]), "", animalInfo[3], DateTime.Parse(animalInfo[4]), medicalHistory, upcomingAppointments[id.ToString()]));
                 id++;
             }
         }
@@ -95,6 +111,7 @@ class Program
         AnsiConsole.WriteLine($"Select the animal's adoption status: {animalAdoptionStatus}");
         bool addVaccineInfo = AnsiConsole.Prompt(
                                 new ConfirmationPrompt("Does this animal have any vaccine information to add?"));
+        MedicalHistory animalMedicalHistory = new MedicalHistory(new List<Appointment>(), new List<Vaccine>());
         List<Vaccine> animalVaccines = new List<Vaccine>();
         while(addVaccineInfo){
             AnsiConsole.Write("Enter vaccine name: ");
@@ -124,9 +141,20 @@ class Program
                         new ConfirmationPrompt("Add another?"));
         }
         File.AppendAllText("animals.txt", $"{animalName},{animalType},{animalAge},{animalAdoptionStatus},{DateTime.Today.ToString("d")}{Environment.NewLine}");
+
         foreach(Vaccine vaccine in animalVaccines){
             File.AppendAllText("vaccines.txt", $"{id},{vaccine.Type},{vaccine.DateGiven.ToString("d")}{Environment.NewLine}");
+            animalMedicalHistory.Vaccines.Add(new Vaccine(vaccine.Type, vaccine.DateGiven));
         }
+
+        foreach(Appointment appointment in animalPreviousAppointments){
+            File.AppendAllText("appointments.txt", $"{id},{appointment.Type},{appointment.Vet.Name},{appointment.Vet.Address},{appointment.Date.ToString("d")}{Environment.NewLine}");
+            animalMedicalHistory.PreviousAppointments.Add(new Appointment(appointment.Type, appointment.Date, appointment.Vet));
+        }
+        List<Appointment> animalUpcomingAppointments = new List<Appointment>();
+        upcomingAppointments[id.ToString()] = animalUpcomingAppointments;
+        animals.Add(new Animal(id, animalName, animalType, animalAge, "", animalAdoptionStatus, DateTime.Today, animalMedicalHistory, animalUpcomingAppointments));
+
         id++;
     }
 
@@ -159,8 +187,33 @@ class Program
         AnsiConsole.WriteLine($"Age: {animals[id].Age}");
         AnsiConsole.WriteLine($"Adoption status: {animals[id].AdoptionStatus}");
         AnsiConsole.WriteLine($"Date added to shelter: {animals[id].DateAddedToShelter.ToString("d")}");
+
+        AnsiConsole.WriteLine("Vaccine information:");
+        if(animals[id].MedicalHistory.Vaccines.Count > 0){
+            Table vaccines = new Table();
+            vaccines.AddColumn("Vaccine");
+            vaccines.AddColumn("Date Given");
+            foreach(Vaccine vaccine in animals[id].MedicalHistory.Vaccines){
+                vaccines.AddRow(vaccine.Type, vaccine.DateGiven.ToString("d"));
+            }
+            AnsiConsole.Write(vaccines);            
+        }
+
+        AnsiConsole.WriteLine("Previous Appointments:");
+        if(animals[id].MedicalHistory.PreviousAppointments.Count > 0){
+            Table appointments = new Table();
+            appointments.AddColumn("Appointment Type");
+            appointments.AddColumn("Vet Name");
+            appointments.AddColumn("Vet Address");
+            appointments.AddColumn("Date");
+            foreach(Appointment appointment in animals[id].MedicalHistory.PreviousAppointments){
+                appointments.AddRow(appointment.Type, appointment.Vet.Name, appointment.Vet.Address, appointment.Date.ToString("d"));
+            }
+            AnsiConsole.Write(appointments);
+        }
+
         AnsiConsole.WriteLine("Upcoming appointments:");
-        if(animals[id].UpcomingAppointments != null){
+        if(animals[id].UpcomingAppointments.Count > 0){
             Table appointments = new Table();
             appointments.AddColumn("Appointment Type");
             appointments.AddColumn("Vet Name");
@@ -200,6 +253,18 @@ class Program
 
     static void ViewAppointments(){
         AnsiConsole.WriteLine($"View Upcoming Appointments");
+        Table appointments = new Table();
+        appointments.AddColumn("Animal");
+        appointments.AddColumn("Appointment Type");
+        appointments.AddColumn("Vet Name");
+        appointments.AddColumn("Vet Address");
+        appointments.AddColumn("Date");
+        foreach(var animal in upcomingAppointments){
+            foreach(Appointment a in animal.Value){
+                appointments.AddRow($"{animals[int.Parse(animal.Key)].Name} (ID: {animal.Key})", a.Type, a.Vet.Name, a.Vet.Address, a.Date.ToString("d"));
+            }
+        }
+        AnsiConsole.Write(appointments);
         string mode = AnsiConsole.Prompt(
                         new SelectionPrompt<string>()
                             .AddChoices(new[] {
@@ -209,6 +274,7 @@ class Program
             AnsiConsole.Clear();
             AddAppointment();
         }
+        AnsiConsole.Clear();
     }
 
     static void AddAppointment(){
@@ -236,5 +302,7 @@ class Program
         AnsiConsole.Write("Enter the date of the appointment (mm/dd/yyyy format): ");
         string appointmentDate = Console.ReadLine();
         File.AppendAllText("appointments.txt", $"{selectedAnimalId},{appointmentType},{vetName},{vetAddress},{appointmentDate}{Environment.NewLine}");
+        upcomingAppointments[selectedAnimalId].Add(new Appointment(appointmentType, DateTime.Parse(appointmentDate), new Vet(vetName, vetAddress)));
+        animals[int.Parse(selectedAnimalId)].UpcomingAppointments.Add(new Appointment(appointmentType, DateTime.Parse(appointmentDate), new Vet(vetName, vetAddress)));
     }
 }
