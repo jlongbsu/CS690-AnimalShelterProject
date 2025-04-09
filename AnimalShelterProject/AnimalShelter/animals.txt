@@ -9,3 +9,5 @@ H,Dog,2,Shy,Not Ready,04/07/2025
 I,Dog,3,Curious,Not Ready,04/07/2025
 J,Cat,5,Playful,Not Ready,04/08/2025
 K,Cat,3,Calm,Not Ready,04/08/2025
+L,Cat,4,Sly,Not Ready,04/09/2025
+M,Dog,3,Playful,Not Ready,04/09/2025
