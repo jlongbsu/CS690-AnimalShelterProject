@@ -200,7 +200,7 @@ class Program
             AnsiConsole.WriteLine($"Adoption status: {animals[id].AdoptionStatus}");
             AnsiConsole.WriteLine($"Date added to shelter: {animals[id].DateAddedToShelter.ToString("d")}");
 
-            AnsiConsole.WriteLine("Vaccine information:");
+            AnsiConsole.WriteLine($"Vaccine information:{(animals[id].MedicalHistory.Vaccines.Count > 0 ? "" : " None")}");
             if(animals[id].MedicalHistory.Vaccines.Count > 0){
                 Table vaccines = new Table();
                 vaccines.AddColumn("Vaccine");
@@ -211,7 +211,7 @@ class Program
                 AnsiConsole.Write(vaccines);            
             }
 
-            AnsiConsole.WriteLine("Previous Appointments:");
+            AnsiConsole.WriteLine($"Previous Appointments:{(animals[id].MedicalHistory.PreviousAppointments.Count > 0 ? "" : " None")}");
             if(animals[id].MedicalHistory.PreviousAppointments.Count > 0){
                 Table appointments = new Table();
                 appointments.AddColumn("Appointment Type");
@@ -224,7 +224,7 @@ class Program
                 AnsiConsole.Write(appointments);
             }
 
-            AnsiConsole.WriteLine("Upcoming appointments:");
+            AnsiConsole.WriteLine($"Upcoming appointments:{(animals[id].UpcomingAppointments.Count > 0 ? "" : " None")}");
             if(animals[id].UpcomingAppointments.Count > 0){
                 Table appointments = new Table();
                 appointments.AddColumn("Appointment Type");
