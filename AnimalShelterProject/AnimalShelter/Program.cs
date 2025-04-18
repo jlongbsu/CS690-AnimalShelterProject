@@ -12,69 +12,71 @@ class Program
     static Dictionary<string, List<Appointment>> upcomingAppointments = new Dictionary<string, List<Appointment>>();
     static void Main(string[] args)
     {
-        Dictionary<string, List<Appointment>> previousAppointments = new Dictionary<string, List<Appointment>>();
-        string appointmentsFilePath = "appointments.txt";
-        if(File.Exists(appointmentsFilePath)){
-            foreach(var line in File.ReadLines(appointmentsFilePath)){
-                string[] appointmentInfo = line.Split(",");
-                string currentDate = DateTime.Today.ToString("d");
-                if(DateTime.Parse(currentDate) <= DateTime.Parse(appointmentInfo[4])){
-                    if(upcomingAppointments.ContainsKey(appointmentInfo[0])){
-                        upcomingAppointments[appointmentInfo[0]].Add(new Appointment(appointmentInfo[1], DateTime.Parse(appointmentInfo[4]), new Vet(appointmentInfo[2], appointmentInfo[3])));
-                    }else{
-                        upcomingAppointments[appointmentInfo[0]] = new List<Appointment>{new Appointment(appointmentInfo[1], DateTime.Parse(appointmentInfo[4]), new Vet(appointmentInfo[2], appointmentInfo[3]))};
-                    }
-                }else{
-                    if(previousAppointments.ContainsKey(appointmentInfo[0])){
-                        previousAppointments[appointmentInfo[0]].Add(new Appointment(appointmentInfo[1], DateTime.Parse(appointmentInfo[4]), new Vet(appointmentInfo[2], appointmentInfo[3])));
-                    }else{
-                        previousAppointments[appointmentInfo[0]] = new List<Appointment>{new Appointment(appointmentInfo[1], DateTime.Parse(appointmentInfo[4]), new Vet(appointmentInfo[2], appointmentInfo[3]))};
-                    }                    
-                }
-            }
-        }
-        Dictionary<string, List<Vaccine>> animalsVaccines = new Dictionary<string, List<Vaccine>>();
-        string vaccinesFilePath = "vaccines.txt";
-        if(File.Exists(vaccinesFilePath)){
-            foreach(var line in File.ReadLines(vaccinesFilePath)){
-                string[] vaccineInfo = line.Split(",");
-                if(animalsVaccines.ContainsKey(vaccineInfo[0])){
-                    animalsVaccines[vaccineInfo[0]].Add(new Vaccine(vaccineInfo[1], DateTime.Parse(vaccineInfo[2])));
-                }else{
-                    animalsVaccines[vaccineInfo[0]] = new List<Vaccine>{new Vaccine(vaccineInfo[1], DateTime.Parse(vaccineInfo[2]))};
-                }
-            }
-        }
+        // Dictionary<string, List<Appointment>> previousAppointments = new Dictionary<string, List<Appointment>>();
+        // string appointmentsFilePath = "appointments.txt";
+        // if(File.Exists(appointmentsFilePath)){
+        //     foreach(var line in File.ReadLines(appointmentsFilePath)){
+        //         string[] appointmentInfo = line.Split(",");
+        //         string currentDate = DateTime.Today.ToString("d");
+        //         if(DateTime.Parse(currentDate) <= DateTime.Parse(appointmentInfo[4])){
+        //             if(upcomingAppointments.ContainsKey(appointmentInfo[0])){
+        //                 upcomingAppointments[appointmentInfo[0]].Add(new Appointment(appointmentInfo[1], DateTime.Parse(appointmentInfo[4]), new Vet(appointmentInfo[2], appointmentInfo[3])));
+        //             }else{
+        //                 upcomingAppointments[appointmentInfo[0]] = new List<Appointment>{new Appointment(appointmentInfo[1], DateTime.Parse(appointmentInfo[4]), new Vet(appointmentInfo[2], appointmentInfo[3]))};
+        //             }
+        //         }else{
+        //             if(previousAppointments.ContainsKey(appointmentInfo[0])){
+        //                 previousAppointments[appointmentInfo[0]].Add(new Appointment(appointmentInfo[1], DateTime.Parse(appointmentInfo[4]), new Vet(appointmentInfo[2], appointmentInfo[3])));
+        //             }else{
+        //                 previousAppointments[appointmentInfo[0]] = new List<Appointment>{new Appointment(appointmentInfo[1], DateTime.Parse(appointmentInfo[4]), new Vet(appointmentInfo[2], appointmentInfo[3]))};
+        //             }                    
+        //         }
+        //     }
+        // }
+        // Dictionary<string, List<Vaccine>> animalsVaccines = new Dictionary<string, List<Vaccine>>();
+        // string vaccinesFilePath = "vaccines.txt";
+        // if(File.Exists(vaccinesFilePath)){
+        //     foreach(var line in File.ReadLines(vaccinesFilePath)){
+        //         string[] vaccineInfo = line.Split(",");
+        //         if(animalsVaccines.ContainsKey(vaccineInfo[0])){
+        //             animalsVaccines[vaccineInfo[0]].Add(new Vaccine(vaccineInfo[1], DateTime.Parse(vaccineInfo[2])));
+        //         }else{
+        //             animalsVaccines[vaccineInfo[0]] = new List<Vaccine>{new Vaccine(vaccineInfo[1], DateTime.Parse(vaccineInfo[2]))};
+        //         }
+        //     }
+        // }
 
-        string animalsFilePath = "animals.txt";
-        if(File.Exists(animalsFilePath)){
-            foreach(var line in File.ReadLines(animalsFilePath)){
-                string[] animalInfo = line.Split(",");
-                if(!upcomingAppointments.ContainsKey(id.ToString())){
-                    upcomingAppointments[id.ToString()] = new List<Appointment>();
-                }
-                MedicalHistory medicalHistory = new MedicalHistory(new List<Appointment>(), new List<Vaccine>());
-                if(previousAppointments.ContainsKey(id.ToString())){
-                    foreach(Appointment appointment in previousAppointments[id.ToString()]){
-                        medicalHistory.PreviousAppointments.Add(appointment);
-                    }
-                    medicalHistory.SortPreviousAppointments();
-                }
-                if(animalsVaccines.ContainsKey(id.ToString())){
-                    animalsVaccines[id.ToString()] = animalsVaccines[id.ToString()].OrderBy(vaccine => vaccine.DateGiven).ThenBy(vaccine => vaccine.Type).ToList();
-                    foreach(Vaccine vaccine in animalsVaccines[id.ToString()]){
-                        medicalHistory.Vaccines.Add(vaccine);
-                    }
-                    medicalHistory.SortVaccines();
-                }
+        // string animalsFilePath = "animals.txt";
+        // if(File.Exists(animalsFilePath)){
+        //     foreach(var line in File.ReadLines(animalsFilePath)){
+        //         string[] animalInfo = line.Split(",");
+        //         if(!upcomingAppointments.ContainsKey(id.ToString())){
+        //             upcomingAppointments[id.ToString()] = new List<Appointment>();
+        //         }
+        //         MedicalHistory medicalHistory = new MedicalHistory(new List<Appointment>(), new List<Vaccine>());
+        //         if(previousAppointments.ContainsKey(id.ToString())){
+        //             foreach(Appointment appointment in previousAppointments[id.ToString()]){
+        //                 medicalHistory.PreviousAppointments.Add(appointment);
+        //             }
+        //             medicalHistory.SortPreviousAppointments();
+        //         }
+        //         if(animalsVaccines.ContainsKey(id.ToString())){
+        //             animalsVaccines[id.ToString()] = animalsVaccines[id.ToString()].OrderBy(vaccine => vaccine.DateGiven).ThenBy(vaccine => vaccine.Type).ToList();
+        //             foreach(Vaccine vaccine in animalsVaccines[id.ToString()]){
+        //                 medicalHistory.Vaccines.Add(vaccine);
+        //             }
+        //             medicalHistory.SortVaccines();
+        //         }
 
-                upcomingAppointments[id.ToString()] = upcomingAppointments[id.ToString()].OrderBy(appointment => appointment.Date).ThenBy(appointment => appointment.Type).ThenBy(appointment => appointment.Vet.Name).ToList();
+        //         upcomingAppointments[id.ToString()] = upcomingAppointments[id.ToString()].OrderBy(appointment => appointment.Date).ThenBy(appointment => appointment.Type).ThenBy(appointment => appointment.Vet.Name).ToList();
 
-                animals.Add(new Animal(id, animalInfo[0], animalInfo[1], int.Parse(animalInfo[2]), animalInfo[3], animalInfo[4], DateTime.Parse(animalInfo[5]), medicalHistory, new List<Appointment>(upcomingAppointments[id.ToString()])));
-                id++;
-            }
-        }
-        DisplayMenu();
+        //         animals.Add(new Animal(id, animalInfo[0], animalInfo[1], int.Parse(animalInfo[2]), animalInfo[3], animalInfo[4], DateTime.Parse(animalInfo[5]), medicalHistory, new List<Appointment>(upcomingAppointments[id.ToString()])));
+        //         id++;
+        //     }
+        // }
+        // DisplayMenu();
+        UI ui = new UI();
+        ui.DisplayMenu();
     }
 
     static void DisplayMenu(){
