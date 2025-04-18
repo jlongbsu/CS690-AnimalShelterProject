@@ -50,7 +50,7 @@ public class UI{
 
     public void ViewAnimals(){
         AnsiConsole.Write("Enter search filter (leave blank for no filter): ");
-        string searchFilter = AnsiConsole.ReadLine();
+        string searchFilter = Console.ReadLine();
 
         string adoptionStatusFilter = AnsiConsole.Prompt(
                     new SelectionPrompt<string>()
