@@ -1,7 +1,7 @@
 A,Dog,1,Playful,Not Ready,04/06/2025
-B,Cat,2,Shy,Not Ready,04/06/2025
-C,Dog,1,Sociable,Not Ready,04/07/2025
-D,Cat,2,Independent,Ready,04/07/2025
+B,Cat,2,Shy,Ready,04/06/2025
+C,Dog,1,Sociable,Ready,04/07/2025
+D,Cat,2,Independent,Adopted,04/07/2025
 E,Cat,2,Silly,Not Ready,04/07/2025
 F,Dog,3,Energetic,Not Ready,04/07/2025
 G,Dog,4,Playful,Not Ready,04/07/2025
@@ -12,3 +12,5 @@ K,Cat,3,Calm,Not Ready,04/08/2025
 L,Cat,4,Sly,Not Ready,04/09/2025
 M,Dog,3,Playful,Not Ready,04/09/2025
 AZ,Dog,3,Goofy,Not Ready,04/18/2025
+ZA,Cat,4,Mean,Not Ready,04/20/2025
+ZZ,Dog,2,Loud,Not Ready,04/20/2025
