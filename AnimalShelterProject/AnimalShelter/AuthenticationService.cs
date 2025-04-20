@@ -14,7 +14,7 @@ public class AuthenticationService{
     }
 
     public bool Authenticate(string username, string password){
-        return accounts[username] == password;
+        return accounts.ContainsKey(username) ? accounts[username] == password : false;
     }
 
     public void CreateAccount(string username, string password){
