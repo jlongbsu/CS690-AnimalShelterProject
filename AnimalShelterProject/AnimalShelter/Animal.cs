@@ -10,6 +10,7 @@ public class Animal{
     public DateTime DateAddedToShelter {get;}
     public MedicalHistory MedicalHistory {get;}
     public List<Appointment> UpcomingAppointments {get; private set;}
+    public FamilyInformation FamilyInfo {get; private set;}
     public Animal(int id, string name, string type, int age, string personality, string adoptionStatus, DateTime dateAddedToShelter, MedicalHistory medicalHistory, List<Appointment> upcomingAppointments){
         this.ID = id;
         this.Name = name;
@@ -20,9 +21,14 @@ public class Animal{
         this.DateAddedToShelter = dateAddedToShelter;
         this.MedicalHistory = medicalHistory;
         this.UpcomingAppointments = upcomingAppointments;
+        this.FamilyInfo = new FamilyInformation("", "", "", "", DateTime.Today);
     }
 
     public void SortUpcomingAppointments(){
         this.UpcomingAppointments = this.UpcomingAppointments.OrderBy(appointment => appointment.Date).ThenBy(appointment => appointment.Type).ThenBy(appointment => appointment.Vet.Name).ToList();
+    }
+
+    public void AddFamilyInfo(string name, string email, string phoneNumber, string address, DateTime dateAdopted){
+        this.FamilyInfo = new FamilyInformation(name, email, phoneNumber, address, dateAdopted);
     }
 }
