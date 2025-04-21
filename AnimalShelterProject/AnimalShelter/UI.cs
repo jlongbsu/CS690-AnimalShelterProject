@@ -12,6 +12,7 @@ public class UI{
         this.auth = new AuthenticationService();
     }
 
+    //Display the menu with options for user actions: add animal, view/edit animals, view/add appointments, exit
     public void DisplayMenu(){
 
         string mode = "";
@@ -49,7 +50,7 @@ public class UI{
         AnsiConsole.Clear();
     }
 
-
+    //Display the login screen for the user. Can create an account, login with existing credentials, or exit the program
     public void LoginScreen(){
 
         string mode = "";
@@ -57,6 +58,7 @@ public class UI{
         while(mode != "Exit"){
 
             AnsiConsole.Clear();
+            AnsiConsole.WriteLine("Animal Shelter Management System");
             
             mode = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
@@ -85,6 +87,7 @@ public class UI{
         string username = "";
         AnsiConsole.WriteLine("Create Account");
 
+        //Ensure username isn't already taken
         while(usernameTaken){
 
             AnsiConsole.Write("Enter a username: ");
@@ -100,6 +103,7 @@ public class UI{
         bool passwordsDontMatch = true;
         string password = "";
         
+        //Ensure user enters same password twice in a row
         while(passwordsDontMatch){
 
             AnsiConsole.Write("Enter a password: ");
@@ -115,6 +119,7 @@ public class UI{
             }
         }
 
+        //Create account and send user to main menu
         auth.CreateAccount(username, password);
 
         AnsiConsole.Clear();
@@ -126,6 +131,7 @@ public class UI{
         bool notAuthenticated = true;
         AnsiConsole.WriteLine("Login");
 
+        //Ensure user enters a valid username and password combination
         while(notAuthenticated){
 
             AnsiConsole.Write("Enter username: ");
@@ -148,6 +154,7 @@ public class UI{
 
     public void AddAnimal(){
 
+        //Ask for basic animal information
         AnsiConsole.WriteLine("Add New Animal");
 
         AnsiConsole.Write("Enter the animal's name: ");
@@ -174,6 +181,7 @@ public class UI{
 
         List<Vaccine> animalVaccines = new List<Vaccine>();
 
+        //Enter 0 or more vaccines for new animal
         while(addVaccineInfo){
             
             AnsiConsole.Write("Enter vaccine name: ");
@@ -193,6 +201,7 @@ public class UI{
 
         List<Appointment> animalPreviousAppointments = new List<Appointment>();
 
+        //Enter 0 or more previous appointments for new animal
         while(addPrevAppointments){
 
             string appointmentType = AnsiConsole.Prompt(
@@ -215,14 +224,17 @@ public class UI{
                         new ConfirmationPrompt("Add another?"));
         }
 
+        //Save new animal
         data.AddAnimal(animalName, animalType, animalAge, animalPersonality, animalAdoptionStatus, animalVaccines, animalPreviousAppointments);
 
+        //Sleep the thread so user can see confirmation message before going back to main menu
         AnsiConsole.WriteLine("New Animal Successfully Added");
         Thread.Sleep(1000);
     }
 
     public void ViewAnimals(){
 
+        //Get search and adoption filters
         List<string> filters = AskForFilters();
 
         string searchFilter = filters[0];
@@ -249,21 +261,21 @@ public class UI{
                                     .AddChoices(animalNames));
 
             if(selectedAnimal != "Return to menu" && selectedAnimal != "Change search filters"){
-
+                
+                //If an animal is selected, take user to a new screen to view its info
                 string selectedAnimalId = selectedAnimal.Split("ID: ")[1];
                 selectedAnimalId = selectedAnimalId.Remove(selectedAnimalId.IndexOf(")"));
                 AnsiConsole.Clear();
                 ViewAnimal(int.Parse(selectedAnimalId));
 
             }else if(selectedAnimal == "Change search filters"){
-
+                
+                //Ask user for new search and adoption filters
                 AnsiConsole.Clear();
                 filters = AskForFilters();
 
                 searchFilter = filters[0];
                 adoptionStatusFilter = filters[1];
-
-                //animalNames = data.ReturnFilteredAnimals(searchFilter, adoptionStatusFilter);
             }
 
             AnsiConsole.Clear();
@@ -277,6 +289,7 @@ public class UI{
 
         while(mode != "Return to View Animals"){
 
+            //Display basic animal info
             AnsiConsole.WriteLine("View Animal Information");
             AnsiConsole.WriteLine($"Name: {animal.Name}");
             AnsiConsole.WriteLine($"Type: {animal.Type}");
@@ -285,6 +298,7 @@ public class UI{
             AnsiConsole.WriteLine($"Adoption status: {animal.AdoptionStatus}");
             AnsiConsole.WriteLine($"Date added to shelter: {animal.DateAddedToShelter.ToString("d")}");
 
+            //Display family info if animal has been adopted
             if(animal.FamilyInfo.Name != ""){
 
                 AnsiConsole.WriteLine("Adopted family information:");
@@ -302,6 +316,7 @@ public class UI{
 
             }
 
+            //Display vaccine info
             AnsiConsole.WriteLine($"Vaccine information:{(animal.MedicalHistory.Vaccines.Count > 0 ? "" : " None")}");
             if(animal.MedicalHistory.Vaccines.Count > 0){
 
@@ -318,7 +333,8 @@ public class UI{
                 AnsiConsole.Write(vaccines);
 
             }
-
+            
+            //Display previous appointment info
             AnsiConsole.WriteLine($"Previous Appointments:{(animal.MedicalHistory.PreviousAppointments.Count > 0 ? "" : " None")}");
 
             if(animal.MedicalHistory.PreviousAppointments.Count > 0){
@@ -339,6 +355,7 @@ public class UI{
 
             }
 
+            //Display upcoming appointment info
             AnsiConsole.WriteLine($"Upcoming appointments:{(animal.UpcomingAppointments.Count > 0 ? "" : " None")}");
 
             if(animal.UpcomingAppointments.Count > 0){
@@ -366,7 +383,8 @@ public class UI{
                             }));
 
             if(mode == "Edit"){
-
+                
+                //Take user to a new page where they can choose what to edit about the animal
                 AnsiConsole.Clear();
                 EditAnimal(animalId);
 
@@ -410,6 +428,7 @@ public class UI{
 
     public void EditAdoptionStatus(int animalId){
 
+        //Set adoption status list to not include whatever adoption status the animal currently is
         List<string> adoptionStatuses = ["Ready", "Not Ready", "Adopted"];
 
         adoptionStatuses.RemoveAll(item => item == data.GetAnimal(animalId).AdoptionStatus);
@@ -431,6 +450,7 @@ public class UI{
                 AddFamilyInfo(animalId);
             }
 
+            //Sleep the thread so the user can see the confirmation message
             AnsiConsole.WriteLine("Adoption Status Successfully Changed");
             Thread.Sleep(1000);
 
@@ -463,6 +483,7 @@ public class UI{
         AnsiConsole.WriteLine("Update Animal's Vaccine Information");
         bool addVaccine = true;
 
+        //User can add multiple new vaccines
         while(addVaccine){
 
             AnsiConsole.Write("Enter vaccine name: ");
@@ -498,6 +519,7 @@ public class UI{
 
         while(mode != "Return to menu"){
 
+            //Setup table to display appointments
             AnsiConsole.WriteLine("View Upcoming Appointments");
 
             Table appointments = new Table();
@@ -507,6 +529,7 @@ public class UI{
             appointments.AddColumn("Vet Address");
             appointments.AddColumn("Date");
 
+            //Sort appointments by date and add them to the table
             data.AddSortedUpcomingAppointmentsToTable(appointments);
 
             AnsiConsole.Write(appointments);
@@ -518,7 +541,8 @@ public class UI{
                                     }));
 
             if(mode == "Add new appointment"){
-
+                
+                //Take user to a new screen to choose an animal and add a new appointment for them
                 AnsiConsole.Clear();
                 ChooseAnimal();
 
@@ -571,6 +595,7 @@ public class UI{
 
         data.AddAppointment(animalId, appointmentType, vetName, vetAddress, appointmentDate);
 
+        //Sleep thread so user can see conmfirmation message
         AnsiConsole.WriteLine("Appointment Successfully Added");
         Thread.Sleep(1000);
     }

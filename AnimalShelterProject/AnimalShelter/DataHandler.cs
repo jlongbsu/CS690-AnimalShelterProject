@@ -129,10 +129,12 @@ public class DataHandler{
 
     public void AddAnimal(string animalName, string animalType, int animalAge, string animalPersonality, string animalAdoptionStatus, List<Vaccine> animalVaccines, List<Appointment> animalPreviousAppointments){
 
+        //Add new animal to animals.txt
         File.AppendAllText("animals.txt", $"{animalName},{animalType},{animalAge},{animalPersonality},{animalAdoptionStatus},{DateTime.Today.ToString("d")}{Environment.NewLine}");
         
         MedicalHistory animalMedicalHistory = new MedicalHistory(new List<Appointment>(), new List<Vaccine>());
         
+        //Add vaccines to medical history
         foreach(Vaccine vaccine in animalVaccines){
 
             File.AppendAllText("vaccines.txt", $"{id},{vaccine.Type},{vaccine.DateGiven.ToString("d")}{Environment.NewLine}");
@@ -142,6 +144,7 @@ public class DataHandler{
 
         animalMedicalHistory.SortVaccines();
 
+        //Add previous appointments to medical history
         foreach(Appointment appointment in animalPreviousAppointments){
 
             File.AppendAllText("appointments.txt", $"{id},{appointment.Type},{appointment.Vet.Name},{appointment.Vet.Address},{appointment.Date.ToString("d")}{Environment.NewLine}");
@@ -151,6 +154,7 @@ public class DataHandler{
 
         animalMedicalHistory.SortPreviousAppointments();
         
+        //Add animal to list of animals
         upcomingAppointments[id.ToString()] = new List<Appointment>();
         animals.Add(new Animal(id, animalName, animalType, animalAge, animalPersonality, animalAdoptionStatus, DateTime.Today, animalMedicalHistory, new List<Appointment>()));
 
@@ -195,8 +199,10 @@ public class DataHandler{
     }
 
     public void ChangeAdoptionStatus(int animalId, string newAdoptionStatus){
+
         animals[animalId].AdoptionStatus = newAdoptionStatus;
         
+        //Find line in animals.txt of animal and change that line to reflect new adoption status
         string[] arrLine = File.ReadAllLines("animals.txt");
         arrLine[animalId] = $"{animals[animalId].Name},{animals[animalId].Type},{animals[animalId].Age},{animals[animalId].Personality},{animals[animalId].AdoptionStatus},{animals[animalId].DateAddedToShelter.ToString("d")}";
         File.WriteAllLines("animals.txt", arrLine);
@@ -204,6 +210,7 @@ public class DataHandler{
 
     public void AddVaccine(int animalId, string vaccineName, string dateGiven){
 
+        //Add vaccine, sort, and save to vaccines.txt
         animals[animalId].MedicalHistory.Vaccines.Add(new Vaccine(vaccineName, DateTime.Parse(dateGiven)));
         animals[animalId].MedicalHistory.SortVaccines();
         File.AppendAllText("vaccines.txt", $"{animalId},{vaccineName},{dateGiven}{Environment.NewLine}");
@@ -212,8 +219,10 @@ public class DataHandler{
 
     public void AddAppointment(int animalId, string appointmentType, string vetName, string vetAddress, string appointmentDate){
 
+        //Save new appointment to appointments.txt
         File.AppendAllText("appointments.txt", $"{animalId},{appointmentType},{vetName},{vetAddress},{appointmentDate}{Environment.NewLine}");
 
+        //Add new appointment for animal and sort appointments by date
         animals[animalId].UpcomingAppointments.Add(new Appointment(appointmentType, DateTime.Parse(appointmentDate), new Vet(vetName, vetAddress)));
         animals[animalId].SortUpcomingAppointments();
 
@@ -223,7 +232,7 @@ public class DataHandler{
     public void AddSortedUpcomingAppointmentsToTable(Table table){
 
         List<string> results = new List<string>();
-
+        
         var sortedUpcomingAppointments = upcomingAppointments.SelectMany(kv => kv.Value.Select(appointment => new {AnimalId = kv.Key, Appointment = appointment})).OrderBy(entry => entry.Appointment.Date).ThenBy(entry => int.Parse(entry.AnimalId)).ThenBy(entry => entry.Appointment.Type).ThenBy(entry => entry.Appointment.Vet.Name).ToList();
         
         foreach(var animal in sortedUpcomingAppointments){
